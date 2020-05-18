@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/mario/Downloads/GrabCut/GrabCut/block.h
+block.h
+/Users/mario/Downloads/GrabCut/GrabCut/block.h
+stdlib.h
+-
+
+/Users/mario/Downloads/GrabCut/GrabCut/graph.cpp
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+graph.h
+/Users/mario/Downloads/GrabCut/GrabCut/graph.h
+instances.inc
+/Users/mario/Downloads/GrabCut/GrabCut/instances.inc
+
+/Users/mario/Downloads/GrabCut/GrabCut/graph.h
+string.h
+-
+block.h
+/Users/mario/Downloads/GrabCut/GrabCut/block.h
+assert.h
+-
+
+/Users/mario/Downloads/GrabCut/GrabCut/instances.inc
+graph.h
+/Users/mario/Downloads/GrabCut/GrabCut/graph.h
+
