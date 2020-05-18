@@ -6,24 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/Users/mario/Downloads/GrabCut/GrabCut/GCApplication.cpp
-opencv2/imgproc.hpp
-/Users/mario/Downloads/GrabCut/GrabCut/opencv2/imgproc.hpp
-GCApplication.h
-/Users/mario/Downloads/GrabCut/GrabCut/GCApplication.h
-grabcut.h
-/Users/mario/Downloads/GrabCut/GrabCut/grabcut.h
-vector
--
-iostream
--
-
-/Users/mario/Downloads/GrabCut/GrabCut/GCApplication.h
-opencv2/imgcodecs.hpp
-/Users/mario/Downloads/GrabCut/GrabCut/opencv2/imgcodecs.hpp
-opencv2/highgui.hpp
-/Users/mario/Downloads/GrabCut/GrabCut/opencv2/highgui.hpp
-
 /Users/mario/Downloads/GrabCut/GrabCut/GMM.h
 opencv2/imgcodecs.hpp
 /Users/mario/Downloads/GrabCut/GrabCut/opencv2/imgcodecs.hpp

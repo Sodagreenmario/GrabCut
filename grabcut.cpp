@@ -15,8 +15,21 @@ using namespace std;
 using namespace cv;
 
 /*
-  Calculate beta - parameter of GrabCut algorithm.
-  beta = 1 / ( 2 * avg( sqr(||color[i] - color[j]||) ) )
+
+    Calculate beta - parameter of GrabCut algorithm.
+    Euclidean distance is applied to evaluate the neighbouring pixels. The difference between GraphCut and GrabCut
+is resulted by the different color space(gray and colorful).
+
+    beta = 1 / ( 2 * avg( sqr(||color[i] - color[j]||) ) )
+
+    static double calcBeta( const Mat& img );
+
+    Input parameters:
+      cv::Mat img : the input image.
+
+    Output parameters:
+      double beta : the constant that encourages smoothness.
+
 */
 static double calcBeta( const Mat& img )
 {
@@ -57,11 +70,22 @@ static double calcBeta( const Mat& img )
 }
 
 /*
-  Calculate weights of noterminal vertices of graph.
-  beta and gamma - parameters of GrabCut algorithm.
+
+    Calculate weights of noterminal vertices of graph. 'V' in paper.
+
+    static void calcNWeights( const Mat& img, Mat& leftW, Mat& upleftW, Mat& upW, Mat& uprightW, double beta, double gamma );
+
+    Input parameters:
+      double beta : the constant that encourages smoothness.
+      double gamma : the constant that determines the degree of smoothness.
+
+    Output parameters:
+      cv::InputOutputArray _mask : The segmentation result.
+
  */
 static void calcNWeights( const Mat& img, Mat& leftW, Mat& upleftW, Mat& upW, Mat& uprightW, double beta, double gamma )
 {
+
     const double gammaDivSqrt2 = gamma / std::sqrt(2.0f);
     leftW.create( img.rows, img.cols, CV_64FC1 );
     upleftW.create( img.rows, img.cols, CV_64FC1 );
@@ -128,11 +152,25 @@ static void checkMask( const Mat& img, const Mat& mask )
 }
 
 /*
+
   Initialize mask using rectangular.
+  (1) Outside of the rectangle -> background.
+  (2) Inside of the rectangle  -> possible foreground.
+
+  static void initMaskWithRect( Mat& mask, Size imgSize, Rect rect );
+
+  Input parameters:
+    Size imgSize : The size of the input image.
+    Rect rect : The drawn rectangle.
+
+  Output parameters:
+    cv::Mat mask : The initialized mask.
+
 */
 static void initMaskWithRect( Mat& mask, Size imgSize, Rect rect )
 {
     mask.create( imgSize, CV_8UC1 );
+    // (1) Outside of the rectangle -> background.
     mask.setTo( GC_BGD );
 
     rect.x = std::max(0, rect.x);
@@ -140,11 +178,22 @@ static void initMaskWithRect( Mat& mask, Size imgSize, Rect rect )
     rect.width = std::min(rect.width, imgSize.width-rect.x);
     rect.height = std::min(rect.height, imgSize.height-rect.y);
 
+    // (2) Inside of the rectangle  -> possible foreground.
     (mask(rect)).setTo( Scalar(GC_PR_FGD) );
 }
 
 /*
   Initialize GMM background and foreground models using kmeans algorithm.
+
+  static void initGMMs( const Mat& img, const Mat& mask, GMM& bgdGMM, GMM& fgdGMM );
+
+  Input parameters:
+    cv::Mat img :
+    cv::Mat mask :
+
+  Output parameters:
+    cv::Mat bgdGMM :
+    cv::Mat fgdGMM :
 */
 static void initGMMs( const Mat& img, const Mat& mask, GMM& bgdGMM, GMM& fgdGMM )
 {
@@ -322,17 +371,21 @@ static void estimateSegmentation(Graph<double, double, double>& graph, Mat& mask
 }
 
 /*
-Input parameters:
-  cv::InputArray _img : The input image
-  cv::Rect rect : The drawn rectangle in the image
-  int iterCount : The times of iterations in each segmentation
+    void GrabCut( InputArray _img, InputOutputArray _mask, Rect rect,
+                      InputOutputArray _bgdModel, InputOutputArray _fgdModel,
+                      int iterCount, int mode )
 
-Output parameters:
-  cv::InputOutputArray _mask : The segmentation result.
+    Input parameters:
+      cv::InputArray _img : The input image
+      cv::Rect rect : The drawn rectangle in the image
+      int iterCount : The times of iterations in each segmentation
 
-Intermediate parameters:
-  cv::InputOutputArray _bgdModel : Background model.
-  cv::InputOutputArray _fgdModel : Foreground model.
+    Output parameters:
+      cv::InputOutputArray _mask : The segmentation result.
+
+    Intermediate parameters:
+      cv::InputOutputArray _bgdModel : Background model.
+      cv::InputOutputArray _fgdModel : Foreground model.
 */
 void GrabCut( InputArray _img, InputOutputArray _mask, Rect rect,
                   InputOutputArray _bgdModel, InputOutputArray _fgdModel,
@@ -356,8 +409,8 @@ void GrabCut( InputArray _img, InputOutputArray _mask, Rect rect,
     if( mode == GC_INIT_WITH_RECT || mode == GC_INIT_WITH_MASK )
     {
         // 2. Initialize the mask. Labels: (background: 0, foreground: 1, possible background: 2, possible foreground: 3)
-        //    Outside the rectangle -> background            /  0
-        //    Inside the rectangle  -> possible foreground   /  3
+        //    Outside of the rectangle -> background            /  0
+        //    Inside of the rectangle  -> possible foreground   /  3
         if( mode == GC_INIT_WITH_RECT )  initMaskWithRect( mask, img.size(), rect );
         else if (mode == GC_INIT_WITH_MASK)   checkMask( img, mask );
         // 3. Sample points and clustering with K-Means.
