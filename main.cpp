@@ -66,7 +66,7 @@ int main( int argc, char** argv )
         char c = (char)waitKey(0);
         switch( c )
         {
-            case '\x1b':
+            case 'q':
                 cout << "Exiting ..." << endl;
                 goto exit_main;
             case 'r':

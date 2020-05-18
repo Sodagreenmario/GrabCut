@@ -163,21 +163,33 @@ void GCApplication::mouseClick( int event, int x, int y, int flags, void* )
         break;
     }
 }
-int GCApplication::nextIter()
-{
-    if( isInitialized )
+
+/*  Test  */
+#include <iostream>
+/*  Test  */
+
+int GCApplication::nextIter() {
+    if (isInitialized) {
 //        grabCut( *image, mask, rect, bgdModel, fgdModel, 1 );
-          GrabCut(*image, mask, rect, bgdModel, fgdModel, 1, GC_EVAL);
+        cout << "C" << endl;
+        GrabCut(*image, mask, rect, bgdModel, fgdModel, 1, GC_EVAL);
+    }
     else
     {
-        if( rectState != SET )
+        if( rectState != SET ) {
+            cout << "D" << endl;
             return iterCount;
-        if( lblsState == SET || prLblsState == SET )
+        }
+        if( lblsState == SET || prLblsState == SET ) {
 //            grabCut( *image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_MASK );
-            GrabCut( *image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_MASK );
-        else
+            cout << "A" << endl;
+            GrabCut(*image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_MASK);
+        }
+        else {
 //            grabCut( *image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT );
-            GrabCut( *image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT );
+            cout << "B" << endl;
+            GrabCut(*image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT);
+        }
         isInitialized = true;
     }
     iterCount++;

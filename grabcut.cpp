@@ -7,12 +7,16 @@
 #include "graph.h"
 #include "GMM.h"
 
+/* Test */
+#include <iostream>
+/* Test */
+
 using namespace std;
 using namespace cv;
 
 /*
   Calculate beta - parameter of GrabCut algorithm.
-  beta = 1/(2*avg(sqr(||color[i] - color[j]||)))
+  beta = 1 / ( 2 * avg( sqr(||color[i] - color[j]||) ) )
 */
 static double calcBeta( const Mat& img )
 {
@@ -317,12 +321,25 @@ static void estimateSegmentation(Graph<double, double, double>& graph, Mat& mask
     }
 }
 
+/*
+Input parameters:
+  cv::InputArray _img : The input image
+  cv::Rect rect : The drawn rectangle in the image
+  int iterCount : The times of iterations in each segmentation
+
+Output parameters:
+  cv::InputOutputArray _mask : The segmentation result.
+
+Intermediate parameters:
+  cv::InputOutputArray _bgdModel : Background model.
+  cv::InputOutputArray _fgdModel : Foreground model.
+*/
 void GrabCut( InputArray _img, InputOutputArray _mask, Rect rect,
                   InputOutputArray _bgdModel, InputOutputArray _fgdModel,
                   int iterCount, int mode )
 {
 //    CV_INSTRUMENT_REGION();
-
+    // 1. Load input image.
     Mat img = _img.getMat();
     Mat& mask = _mask.getMatRef();
     Mat& bgdModel = _bgdModel.getMatRef();
@@ -338,10 +355,12 @@ void GrabCut( InputArray _img, InputOutputArray _mask, Rect rect,
 
     if( mode == GC_INIT_WITH_RECT || mode == GC_INIT_WITH_MASK )
     {
-        if( mode == GC_INIT_WITH_RECT )
-            initMaskWithRect( mask, img.size(), rect );
-        else // flag == GC_INIT_WITH_MASK
-            checkMask( img, mask );
+        // 2. Initialize the mask. Labels: (background: 0, foreground: 1, possible background: 2, possible foreground: 3)
+        //    Outside the rectangle -> background            /  0
+        //    Inside the rectangle  -> possible foreground   /  3
+        if( mode == GC_INIT_WITH_RECT )  initMaskWithRect( mask, img.size(), rect );
+        else if (mode == GC_INIT_WITH_MASK)   checkMask( img, mask );
+        // 3. Sample points and clustering with K-Means.
         initGMMs( img, mask, bgdGMM, fgdGMM );
     }
 
@@ -354,20 +373,24 @@ void GrabCut( InputArray _img, InputOutputArray _mask, Rect rect,
     if( mode == GC_EVAL || mode == GC_EVAL_FREEZE_MODEL )
         checkMask( img, mask );
 
+    // 4. Construct graph. Calculate the terminal-weight term and non-terminal-weight term.
     const double gamma = 50;
     const double lambda = 9*gamma;
+    // 4.1.1 Calculate the beta term.
     const double beta = calcBeta( img );
-
     Mat leftW, upleftW, upW, uprightW;
+    // 4.1.2 Calculate the non-terminal weights.
     calcNWeights( img, leftW, upleftW, upW, uprightW, beta, gamma );
-
     for( int i = 0; i < iterCount; i++ )
     {
         Graph<double, double, double> graph;
         assignGMMsComponents( img, mask, bgdGMM, fgdGMM, compIdxs );
         if( mode != GC_EVAL_FREEZE_MODEL )
             learnGMMs( img, mask, compIdxs, bgdGMM, fgdGMM );
+        cout << "Enter1" << endl;
         constructGCGraph(img, mask, bgdGMM, fgdGMM, lambda, leftW, upleftW, upW, uprightW, graph );
+        cout << "Enter2" << endl;
         estimateSegmentation( graph, mask );
+        cout << "Enter3" << endl;
     }
 }
