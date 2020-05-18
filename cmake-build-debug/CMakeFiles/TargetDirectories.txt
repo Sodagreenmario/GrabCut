@@ -1,3 +1,0 @@
-/Users/mario/Downloads/GrabCut/GrabCut/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/mario/Downloads/GrabCut/GrabCut/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/mario/Downloads/GrabCut/GrabCut/cmake-build-debug/CMakeFiles/GrabCut.dir
