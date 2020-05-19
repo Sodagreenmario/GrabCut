@@ -20,7 +20,7 @@ GMM::GMM( Mat& _model )
 
     coefs = model.ptr<double>(0);
     mean = coefs + componentsCount;
-    cov = mean + 3*componentsCount;
+    cov = mean + 3 * componentsCount;
 
     for( int ci = 0; ci < componentsCount; ci++ )
         if( coefs[ci] > 0 )
@@ -28,6 +28,16 @@ GMM::GMM( Mat& _model )
     totalSampleCount = 0;
 }
 
+/*
+
+    double GMM::operator()( const Vec3d color ) const;
+
+    Input paramters:
+      cv::Vec3d color :  the color vector.
+
+    Output paramters:
+      double res : tweight.
+*/
 double GMM::operator()( const Vec3d color ) const
 {
     double res = 0;
@@ -53,6 +63,16 @@ double GMM::operator()( int ci, const Vec3d color ) const
     return res;
 }
 
+/*
+    Chose a component for a color vector.
+    int GMM::whichComponent( const Vec3d color ) const;
+
+    Input paramters:
+      cv::Vec3d color : a color vector.
+
+    Output parameters:
+      int k : the index of the chosen components.
+*/
 int GMM::whichComponent( const Vec3d color ) const
 {
     int k = 0;
@@ -70,6 +90,10 @@ int GMM::whichComponent( const Vec3d color ) const
     return k;
 }
 
+/*
+    Initialize 'sums', 'prods', 'sampleCounts', 'totalSampleCount' for the GMM model.
+    void GMM::initLearning();
+*/
 void GMM::initLearning()
 {
     for( int ci = 0; ci < componentsCount; ci++)
@@ -83,6 +107,14 @@ void GMM::initLearning()
     totalSampleCount = 0;
 }
 
+/*
+    Add a sample into GMM model.
+    void GMM::addSample( int ci, const Vec3d color )；
+
+    Input parameters:
+      int ci : the index of the component.
+      cv::Vec3d color : a color vector.
+*/
 void GMM::addSample( int ci, const Vec3d color )
 {
     sums[ci][0] += color[0]; sums[ci][1] += color[1]; sums[ci][2] += color[2];
