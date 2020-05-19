@@ -82,6 +82,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/mario/Downloads/GrabCut/GrabCut/AdaptedGraph.cpp">
+			<Option target="GrabCut"/>
+		</Unit>
+		<Unit filename="/Users/mario/Downloads/GrabCut/GrabCut/AdaptedGraph.h">
+			<Option target="GrabCut"/>
+		</Unit>
 		<Unit filename="/Users/mario/Downloads/GrabCut/GrabCut/GCApplication.cpp">
 			<Option target="GrabCut"/>
 		</Unit>

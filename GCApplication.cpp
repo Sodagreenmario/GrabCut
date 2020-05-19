@@ -19,6 +19,7 @@ void GCApplication::reset()
     prLblsState = NOT_SET;
     iterCount = 0;
 }
+
 void GCApplication::setImageAndWinName( const Mat& _image, const string& _winName  )
 {
     if( _image.empty() || _winName.empty() )
@@ -28,6 +29,7 @@ void GCApplication::setImageAndWinName( const Mat& _image, const string& _winNam
     mask.create( image->size(), CV_8UC1);
     reset();
 }
+
 void GCApplication::showImage() const
 {
     if( image->empty() || winName->empty() )
@@ -170,9 +172,10 @@ void GCApplication::mouseClick( int event, int x, int y, int flags, void* )
 
 int GCApplication::nextIter() {
     if (isInitialized) {
-//        grabCut( *image, mask, rect, bgdModel, fgdModel, 1 );
         cout << "C" << endl;
+//        grabCut( *image, mask, rect, bgdModel, fgdModel, 1 );
         GrabCut(*image, mask, rect, bgdModel, fgdModel, 1, GC_EVAL);
+//        GrabCut(*image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT);
     }
     else
     {
@@ -181,13 +184,13 @@ int GCApplication::nextIter() {
             return iterCount;
         }
         if( lblsState == SET || prLblsState == SET ) {
-//            grabCut( *image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_MASK );
             cout << "A" << endl;
+//            grabCut( *image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_MASK );
             GrabCut(*image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_MASK);
         }
         else {
-//            grabCut( *image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT );
             cout << "B" << endl;
+//            grabCut( *image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT );
             GrabCut(*image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT);
         }
         isInitialized = true;

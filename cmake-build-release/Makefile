@@ -123,6 +123,33 @@ GrabCut/fast:
 	$(MAKE) -f CMakeFiles/GrabCut.dir/build.make CMakeFiles/GrabCut.dir/build
 .PHONY : GrabCut/fast
 
+AdaptedGraph.o: AdaptedGraph.cpp.o
+
+.PHONY : AdaptedGraph.o
+
+# target to build an object file
+AdaptedGraph.cpp.o:
+	$(MAKE) -f CMakeFiles/GrabCut.dir/build.make CMakeFiles/GrabCut.dir/AdaptedGraph.cpp.o
+.PHONY : AdaptedGraph.cpp.o
+
+AdaptedGraph.i: AdaptedGraph.cpp.i
+
+.PHONY : AdaptedGraph.i
+
+# target to preprocess a source file
+AdaptedGraph.cpp.i:
+	$(MAKE) -f CMakeFiles/GrabCut.dir/build.make CMakeFiles/GrabCut.dir/AdaptedGraph.cpp.i
+.PHONY : AdaptedGraph.cpp.i
+
+AdaptedGraph.s: AdaptedGraph.cpp.s
+
+.PHONY : AdaptedGraph.s
+
+# target to generate assembly for a file
+AdaptedGraph.cpp.s:
+	$(MAKE) -f CMakeFiles/GrabCut.dir/build.make CMakeFiles/GrabCut.dir/AdaptedGraph.cpp.s
+.PHONY : AdaptedGraph.cpp.s
+
 GCApplication.o: GCApplication.cpp.o
 
 .PHONY : GCApplication.o
@@ -294,6 +321,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... GrabCut"
+	@echo "... AdaptedGraph.o"
+	@echo "... AdaptedGraph.i"
+	@echo "... AdaptedGraph.s"
 	@echo "... GCApplication.o"
 	@echo "... GCApplication.i"
 	@echo "... GCApplication.s"

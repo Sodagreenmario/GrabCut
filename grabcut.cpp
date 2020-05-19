@@ -4,7 +4,7 @@
 //
 
 #include "grabcut.h"
-#include "graph.h"
+#include "AdaptedGraph.h"
 #include "GMM.h"
 
 /* Test */
@@ -290,20 +290,20 @@ static void learnGMMs( const Mat& img, const Mat& mask, const Mat& compIdxs, GMM
 */
 static void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM, const GMM& fgdGMM, double lambda,
                               const Mat& leftW, const Mat& upleftW, const Mat& upW, const Mat& uprightW,
-                              Graph<double, double, double>& graph )
+                              AdaptedGrpah& graph )
 {
     int vtxCount = img.cols*img.rows,
             edgeCount = 2*(4*img.cols*img.rows - 3*(img.cols + img.rows) + 2);
-    graph.create(vtxCount, edgeCount);
+    graph = AdaptedGrpah(vtxCount, edgeCount);
     Point p;
     for( p.y = 0; p.y < img.rows; p.y++ )
     {
         for( p.x = 0; p.x < img.cols; p.x++)
         {
             // add node
-            int vtxIdx = graph.add_node();
+            int vtxIdx = graph.addVtx();
+//            cout << vtxIdx;
             Vec3b color = img.at<Vec3b>(p);
-
             // set t-weights
             double fromSource, toSink;
             if( mask.at<uchar>(p) == GC_PR_BGD || mask.at<uchar>(p) == GC_PR_FGD )
@@ -321,28 +321,29 @@ static void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM
                 fromSource = lambda;
                 toSink = 0;
             }
-            graph.add_tweights( vtxIdx, fromSource, toSink );
-
+//            cout << "B";
+            graph.addTermWeights( vtxIdx, fromSource, toSink );
+//            cout << "C";
             // set n-weights
             if( p.x>0 )
             {
                 double w = leftW.at<double>(p);
-                graph.add_edge( vtxIdx, vtxIdx-1, w, w );
+                graph.addEdges( vtxIdx, vtxIdx-1, w, w );
             }
             if( p.x>0 && p.y>0 )
             {
                 double w = upleftW.at<double>(p);
-                graph.add_edge( vtxIdx, vtxIdx-img.cols-1, w, w );
+                graph.addEdges( vtxIdx, vtxIdx-img.cols-1, w, w );
             }
             if( p.y>0 )
             {
                 double w = upW.at<double>(p);
-                graph.add_edge( vtxIdx, vtxIdx-img.cols, w, w );
+                graph.addEdges( vtxIdx, vtxIdx-img.cols, w, w );
             }
             if( p.x<img.cols-1 && p.y>0 )
             {
                 double w = uprightW.at<double>(p);
-                graph.add_edge( vtxIdx, vtxIdx-img.cols+1, w, w );
+                graph.addEdges( vtxIdx, vtxIdx-img.cols+1, w, w );
             }
         }
     }
@@ -351,9 +352,11 @@ static void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM
 /*
   Estimate segmentation using MaxFlow algorithm
 */
-static void estimateSegmentation(Graph<double, double, double>& graph, Mat& mask )
+static void estimateSegmentation(AdaptedGrpah& graph, Mat& mask )
 {
-    graph.maxflow();
+    cout << "E1";
+    graph.maxFlow();
+    cout << "E2";
     Point p;
     for( p.y = 0; p.y < mask.rows; p.y++ )
     {
@@ -361,7 +364,7 @@ static void estimateSegmentation(Graph<double, double, double>& graph, Mat& mask
         {
             if( mask.at<uchar>(p) == GC_PR_BGD || mask.at<uchar>(p) == GC_PR_FGD )
             {
-                if( graph.what_segment( p.y*mask.cols+p.x /*vertex index*/ ) == Graph<double, double, double>::SOURCE)
+                if( graph.inSourceSegment(p.y*mask.cols+p.x))
                     mask.at<uchar>(p) = GC_PR_FGD;
                 else
                     mask.at<uchar>(p) = GC_PR_BGD;
@@ -436,14 +439,11 @@ void GrabCut( InputArray _img, InputOutputArray _mask, Rect rect,
     calcNWeights( img, leftW, upleftW, upW, uprightW, beta, gamma );
     for( int i = 0; i < iterCount; i++ )
     {
-        Graph<double, double, double> graph;
+        AdaptedGrpah graph;
         assignGMMsComponents( img, mask, bgdGMM, fgdGMM, compIdxs );
         if( mode != GC_EVAL_FREEZE_MODEL )
             learnGMMs( img, mask, compIdxs, bgdGMM, fgdGMM );
-        cout << "Enter1" << endl;
         constructGCGraph(img, mask, bgdGMM, fgdGMM, lambda, leftW, upleftW, upW, uprightW, graph );
-        cout << "Enter2" << endl;
         estimateSegmentation( graph, mask );
-        cout << "Enter3" << endl;
     }
 }

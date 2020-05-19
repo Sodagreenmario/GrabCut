@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/GrabCut.dir/AdaptedGraph.cpp.o"
   "CMakeFiles/GrabCut.dir/GCApplication.cpp.o"
   "CMakeFiles/GrabCut.dir/GMM.cpp.o"
   "CMakeFiles/GrabCut.dir/grabcut.cpp.o"

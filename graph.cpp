@@ -7,11 +7,6 @@
 #include "graph.h"
 
 
-template <typename captype, typename tcaptype, typename flowtype>
-Graph<captype, tcaptype, flowtype>::Graph(){
-    flow = 0;
-}
-
 template <typename captype, typename tcaptype, typename flowtype> 
 	Graph<captype, tcaptype, flowtype>::Graph(int node_num_max, int edge_num_max, void (*err_function)(char *))
 	: node_num(0),
@@ -23,8 +18,7 @@ template <typename captype, typename tcaptype, typename flowtype>
 
 	nodes = (node*) malloc(node_num_max*sizeof(node));
 	arcs = (arc*) malloc(2*edge_num_max*sizeof(arc));
-//	if (!nodes || !arcs) { if (error_function) (*error_function)("Not enough memory!"); exit(1); }
-	if (!nodes || !arcs) { exit(1); }
+	if (!nodes || !arcs) { if (error_function) (*error_function)("Not enough memory!"); exit(1); }
 
 	node_last = nodes;
 	node_max = nodes + node_num_max;
@@ -34,29 +28,6 @@ template <typename captype, typename tcaptype, typename flowtype>
 	maxflow_iteration = 0;
 	flow = 0;
 }
-
-template <typename captype, typename tcaptype, typename flowtype>
-void Graph<captype, tcaptype, flowtype>::create(int node_num_max, int edge_num_max)
-{
-    if (node_num_max < 16) node_num_max = 16;
-    if (edge_num_max < 16) edge_num_max = 16;
-
-    nodes = (node*) malloc(node_num_max*sizeof(node));
-    arcs = (arc*) malloc(2*edge_num_max*sizeof(arc));
-    if (!nodes || !arcs) {
-//        cout << "Not enough memory!";
-        exit(1);
-    }
-
-    node_last = nodes;
-    node_max = nodes + node_num_max;
-    arc_last = arcs;
-    arc_max = arcs + 2*edge_num_max;
-
-    maxflow_iteration = 0;
-    flow = 0;
-}
-
 
 template <typename captype, typename tcaptype, typename flowtype> 
 	Graph<captype,tcaptype,flowtype>::~Graph()
@@ -96,8 +67,7 @@ template <typename captype, typename tcaptype, typename flowtype>
 	node_num_max += node_num_max / 2;
 	if (node_num_max < node_num + num) node_num_max = node_num + num;
 	nodes = (node*) realloc(nodes_old, node_num_max*sizeof(node));
-//	if (!nodes) { if (error_function) (*error_function)("Not enough memory!"); exit(1); }
-	if (!nodes) { exit(1); }
+	if (!nodes) { if (error_function) (*error_function)("Not enough memory!"); exit(1); }
 
 	node_last = nodes + node_num;
 	node_max = nodes + node_num_max;
@@ -121,8 +91,7 @@ template <typename captype, typename tcaptype, typename flowtype>
 
 	arc_num_max += arc_num_max / 2; if (arc_num_max & 1) arc_num_max ++;
 	arcs = (arc*) realloc(arcs_old, arc_num_max*sizeof(arc));
-//	if (!arcs) { if (error_function) (*error_function)("Not enough memory!"); exit(1); }
-	if (!arcs) { exit(1); }
+	if (!arcs) { if (error_function) (*error_function)("Not enough memory!"); exit(1); }
 
 	arc_last = arcs + arc_num;
 	arc_max = arcs + arc_num_max;
