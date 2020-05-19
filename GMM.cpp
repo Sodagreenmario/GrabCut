@@ -24,7 +24,7 @@ GMM::GMM( Mat& _model )
 
     for( int ci = 0; ci < componentsCount; ci++ )
         if( coefs[ci] > 0 )
-            calcInverseCovAndDeterm(ci, 0.0);
+            calcInverseCovAndDeterm(ci);
     totalSampleCount = 0;
 }
 
@@ -125,6 +125,13 @@ void GMM::addSample( int ci, const Vec3d color )
     totalSampleCount++;
 }
 
+/*
+    Update the parameters in GMM.
+    (1) coef
+    (2) mean
+    (3) cov
+    void GMM::endLearning();
+*/
 void GMM::endLearning()
 {
     for( int ci = 0; ci < componentsCount; ci++ )
@@ -136,39 +143,52 @@ void GMM::endLearning()
         {
             CV_Assert(totalSampleCount > 0);
             double inv_n = 1.0 / n;
+            // (1) coef
             coefs[ci] = (double)n/totalSampleCount;
 
             double* m = mean + 3*ci;
+            // (2) mean
             m[0] = sums[ci][0] * inv_n; m[1] = sums[ci][1] * inv_n; m[2] = sums[ci][2] * inv_n;
 
             double* c = cov + 9*ci;
+            // (3) cov
             c[0] = prods[ci][0][0] * inv_n - m[0]*m[0]; c[1] = prods[ci][0][1] * inv_n - m[0]*m[1]; c[2] = prods[ci][0][2] * inv_n - m[0]*m[2];
             c[3] = prods[ci][1][0] * inv_n - m[1]*m[0]; c[4] = prods[ci][1][1] * inv_n - m[1]*m[1]; c[5] = prods[ci][1][2] * inv_n - m[1]*m[2];
             c[6] = prods[ci][2][0] * inv_n - m[2]*m[0]; c[7] = prods[ci][2][1] * inv_n - m[2]*m[1]; c[8] = prods[ci][2][2] * inv_n - m[2]*m[2];
 
-            calcInverseCovAndDeterm(ci, 0.01);
+            double dtrm = c[0]*(c[4]*c[8]-c[5]*c[7]) - c[1]*(c[3]*c[8]-c[5]*c[6]) + c[2]*(c[3]*c[7]-c[4]*c[6]);
+            double singularFix = 0.01;
+            if (dtrm <= std::numeric_limits<double>::epsilon()  && singularFix > 0)
+            {
+                // Adds the white noise to avoid singular covariance matrix.
+                c[0] += singularFix;
+                c[4] += singularFix;
+                c[8] += singularFix;
+            }
+
+            calcInverseCovAndDeterm(ci);
         }
     }
 }
 
-void GMM::calcInverseCovAndDeterm(int ci, const double singularFix)
+/*
+
+    Calculate the inverse of Cov and Det.
+    void GMM::calcInverseCovAndDeterm(int ci)
+
+    Input parameters:
+      int ci : the index of the component.
+      double singularFix : the white noise to avoid singular covariance matrix.
+*/
+void GMM::calcInverseCovAndDeterm(int ci)
 {
     if( coefs[ci] > 0 )
     {
         double *c = cov + 9*ci;
         double dtrm = c[0]*(c[4]*c[8]-c[5]*c[7]) - c[1]*(c[3]*c[8]-c[5]*c[6]) + c[2]*(c[3]*c[7]-c[4]*c[6]);
-        if (dtrm <= 1e-6 && singularFix > 0)
-        {
-            // Adds the white noise to avoid singular covariance matrix.
-            c[0] += singularFix;
-            c[4] += singularFix;
-            c[8] += singularFix;
-            dtrm = c[0] * (c[4] * c[8] - c[5] * c[7]) - c[1] * (c[3] * c[8] - c[5] * c[6]) + c[2] * (c[3] * c[7] - c[4] * c[6]);
-        }
         covDeterms[ci] = dtrm;
-
-        CV_Assert( dtrm > std::numeric_limits<double>::epsilon() );
         double inv_dtrm = 1.0 / dtrm;
+        // calculate the inverse
         inverseCovs[ci][0][0] =  (c[4]*c[8] - c[5]*c[7]) * inv_dtrm;
         inverseCovs[ci][1][0] = -(c[3]*c[8] - c[5]*c[6]) * inv_dtrm;
         inverseCovs[ci][2][0] =  (c[3]*c[7] - c[4]*c[6]) * inv_dtrm;

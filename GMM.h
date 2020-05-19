@@ -35,7 +35,7 @@ public:
 
 private:
     // Calculate the inverse and determ
-    void calcInverseCovAndDeterm(int ci, double singularFix);
+    void calcInverseCovAndDeterm(int ci);
     Mat model;
     // The coefficient, mean, cov of each gaussian distribution in GMM.
     double *coefs, *mean, *cov;
