@@ -6,6 +6,7 @@ CMakeFiles/GrabCut.dir/AdaptedGraph.cpp.o: ../AdaptedGraph.h
 CMakeFiles/GrabCut.dir/AdaptedGraph.cpp.o: ../block.h
 CMakeFiles/GrabCut.dir/AdaptedGraph.cpp.o: ../graph.h
 
+CMakeFiles/GrabCut.dir/GCApplication.cpp.o: ../AdaptedGraph.h
 CMakeFiles/GrabCut.dir/GCApplication.cpp.o: ../GCApplication.cpp
 CMakeFiles/GrabCut.dir/GCApplication.cpp.o: ../GCApplication.h
 CMakeFiles/GrabCut.dir/GCApplication.cpp.o: ../GMM.h

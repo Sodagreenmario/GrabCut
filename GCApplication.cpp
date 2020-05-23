@@ -166,31 +166,19 @@ void GCApplication::mouseClick( int event, int x, int y, int flags, void* )
     }
 }
 
-/*  Test  */
-#include <iostream>
-/*  Test  */
-
 int GCApplication::nextIter() {
     if (isInitialized) {
-        cout << "C" << endl;
-//        grabCut( *image, mask, rect, bgdModel, fgdModel, 1 );
         GrabCut(*image, mask, rect, bgdModel, fgdModel, 1, GC_EVAL);
-//        GrabCut(*image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT);
     }
     else
     {
         if( rectState != SET ) {
-            cout << "D" << endl;
             return iterCount;
         }
         if( lblsState == SET || prLblsState == SET ) {
-            cout << "A" << endl;
-//            grabCut( *image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_MASK );
             GrabCut(*image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_MASK);
         }
         else {
-            cout << "B" << endl;
-//            grabCut( *image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT );
             GrabCut(*image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT);
         }
         isInitialized = true;

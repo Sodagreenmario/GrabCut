@@ -5,6 +5,8 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
 #include "GCApplication.h"
+#include <ctime>
+#include <cmath>
 #include <iostream>
 
 using namespace std;
@@ -77,11 +79,14 @@ int main( int argc, char** argv )
             case 'n':
                 int iterCount = gcapp.getIterCount();
                 cout << "<" << iterCount << "... ";
+                clock_t start_time = clock();
                 int newIterCount = gcapp.nextIter();
+                clock_t end_time = clock();
                 if( newIterCount > iterCount )
                 {
                     gcapp.showImage();
-                    cout << iterCount << ">" << endl;
+                    cout << "    " << floor(((end_time - start_time) * 1.0 / CLOCKS_PER_SEC) * 100 + 0.5) / 100 << "s" << endl;
+                    cout << "             " << iterCount << "...>"<< endl;
                 }
                 else
                     cout << "rect must be determined>" << endl;

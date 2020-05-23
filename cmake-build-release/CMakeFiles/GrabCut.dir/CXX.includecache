@@ -6,13 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/Users/mario/Downloads/GrabCut/GrabCut/AdaptedGraph.cpp
-AdaptedGraph.h
-/Users/mario/Downloads/GrabCut/GrabCut/AdaptedGraph.h
-
 /Users/mario/Downloads/GrabCut/GrabCut/AdaptedGraph.h
 graph.h
 /Users/mario/Downloads/GrabCut/GrabCut/graph.h
+
+/Users/mario/Downloads/GrabCut/GrabCut/GCApplication.h
+opencv2/imgcodecs.hpp
+/Users/mario/Downloads/GrabCut/GrabCut/opencv2/imgcodecs.hpp
+opencv2/highgui.hpp
+/Users/mario/Downloads/GrabCut/GrabCut/opencv2/highgui.hpp
 
 /Users/mario/Downloads/GrabCut/GrabCut/GMM.h
 opencv2/imgcodecs.hpp
@@ -45,8 +47,8 @@ opencv2/imgcodecs.hpp
 /Users/mario/Downloads/GrabCut/GrabCut/opencv2/imgcodecs.hpp
 opencv2/imgproc.hpp
 /Users/mario/Downloads/GrabCut/GrabCut/opencv2/imgproc.hpp
-graph.h
-/Users/mario/Downloads/GrabCut/GrabCut/graph.h
+AdaptedGraph.h
+/Users/mario/Downloads/GrabCut/GrabCut/AdaptedGraph.h
 GMM.h
 /Users/mario/Downloads/GrabCut/GrabCut/GMM.h
 
@@ -56,6 +58,20 @@ string.h
 block.h
 /Users/mario/Downloads/GrabCut/GrabCut/block.h
 assert.h
+-
+
+/Users/mario/Downloads/GrabCut/GrabCut/main.cpp
+opencv2/imgcodecs.hpp
+/Users/mario/Downloads/GrabCut/GrabCut/opencv2/imgcodecs.hpp
+opencv2/highgui.hpp
+/Users/mario/Downloads/GrabCut/GrabCut/opencv2/highgui.hpp
+GCApplication.h
+/Users/mario/Downloads/GrabCut/GrabCut/GCApplication.h
+ctime
+-
+cmath
+-
+iostream
 -
 
 /usr/local/Cellar/opencv/4.3.0_1/include/opencv4/opencv2/core.hpp

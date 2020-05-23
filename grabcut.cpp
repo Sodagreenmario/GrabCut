@@ -6,10 +6,7 @@
 #include "grabcut.h"
 #include "AdaptedGraph.h"
 #include "GMM.h"
-
-/* Test */
 #include <iostream>
-/* Test */
 
 using namespace std;
 using namespace cv;
@@ -302,7 +299,6 @@ static void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM
         {
             // add node
             int vtxIdx = graph.addVtx();
-//            cout << vtxIdx;
             Vec3b color = img.at<Vec3b>(p);
             // set t-weights
             double fromSource, toSink;
@@ -321,9 +317,7 @@ static void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM
                 fromSource = lambda;
                 toSink = 0;
             }
-//            cout << "B";
             graph.addTermWeights( vtxIdx, fromSource, toSink );
-//            cout << "C";
             // set n-weights
             if( p.x>0 )
             {
@@ -352,25 +346,28 @@ static void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM
 /*
   Estimate segmentation using MaxFlow algorithm
 */
-static void estimateSegmentation(AdaptedGrpah& graph, Mat& mask )
+static int estimateSegmentation(AdaptedGrpah& graph, Mat& mask )
 {
-    cout << "E1";
     graph.maxFlow();
-    cout << "E2";
     Point p;
+    int changed = 0;
     for( p.y = 0; p.y < mask.rows; p.y++ )
     {
         for( p.x = 0; p.x < mask.cols; p.x++ )
         {
+
             if( mask.at<uchar>(p) == GC_PR_BGD || mask.at<uchar>(p) == GC_PR_FGD )
             {
+                int old_value = mask.at<uchar>(p);
                 if( graph.inSourceSegment(p.y*mask.cols+p.x))
                     mask.at<uchar>(p) = GC_PR_FGD;
                 else
                     mask.at<uchar>(p) = GC_PR_BGD;
+                changed += abs(mask.at<uchar>(p) - old_value);
             }
         }
     }
+    return changed;
 }
 
 /*
@@ -444,6 +441,7 @@ void GrabCut( InputArray _img, InputOutputArray _mask, Rect rect,
         if( mode != GC_EVAL_FREEZE_MODEL )
             learnGMMs( img, mask, compIdxs, bgdGMM, fgdGMM );
         constructGCGraph(img, mask, bgdGMM, fgdGMM, lambda, leftW, upleftW, upW, uprightW, graph );
-        estimateSegmentation( graph, mask );
+        int changed = estimateSegmentation( graph, mask );
+        cout << "\n    changed pixels: " << changed << endl;
     }
 }
