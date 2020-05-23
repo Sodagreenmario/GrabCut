@@ -7,3 +7,5 @@ An implementation of GrabCut segmentation algorithm.
 [2] OpenCV - An example using the GrabCut algorithm (https://docs.opencv.org/trunk/d8/d34/samples_2cpp_2grabcut_8cpp-example.html#a36)
 
 [3] OpenCV Source Code - GrabCut https://github.com/opencv/opencv/blob/master/modules/imgproc/src/grabcut.cpp
+
+[4] Histogram Contrast Method - https://github.com/MCG-NKU/CmCode
