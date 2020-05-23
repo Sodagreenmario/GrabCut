@@ -54,6 +54,7 @@ int main( int argc, char** argv )
         return 1;
     }
     Mat image = imread(samples::findFile(filename), IMREAD_COLOR);
+    cout << "Image Shape: " << image.size() << endl;
     if( image.empty() )
     {
         cout << "\n Durn, couldn't read image filename " << filename << endl;

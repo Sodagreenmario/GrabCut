@@ -7,6 +7,7 @@
 #include "AdaptedGraph.h"
 #include "GMM.h"
 #include <iostream>
+#include <cstdio>
 
 using namespace std;
 using namespace cv;
@@ -62,7 +63,7 @@ static double calcBeta( const Mat& img )
         beta = 0;
     else
         beta = 1.f / (2 * beta/(4*img.cols*img.rows - 3*img.cols - 3*img.rows + 2) );
-
+    printf("\n    beta : %f", beta);
     return beta;
 }
 
@@ -84,6 +85,7 @@ static void calcNWeights( const Mat& img, Mat& leftW, Mat& upleftW, Mat& upW, Ma
 {
 
     const double gammaDivSqrt2 = gamma / std::sqrt(2.0f);
+    double total_nweights = 0.0;
     leftW.create( img.rows, img.cols, CV_64FC1 );
     upleftW.create( img.rows, img.cols, CV_64FC1 );
     upW.create( img.rows, img.cols, CV_64FC1 );
@@ -121,8 +123,11 @@ static void calcNWeights( const Mat& img, Mat& leftW, Mat& upleftW, Mat& upW, Ma
             }
             else
                 uprightW.at<double>(y,x) = 0;
+
+            total_nweights += leftW.at<double>(y,x) + upleftW.at<double>(y, x) + upW.at<double>(y,x) + uprightW.at<double>(y,x);
         }
     }
+    printf("\n    V : %f", total_nweights);
 }
 
 /*
