@@ -23,6 +23,7 @@ static void help(char** argv)
          "\tq - quit the program\n"
          "\tr - restore the original image\n"
          "\tn - next iteration\n"
+         "\th - show the result of Histogram Contrast"
          "\n"
          "\tleft mouse button - set rectangle\n"
          "\n"
@@ -75,6 +76,9 @@ int main( int argc, char** argv )
                 cout << endl;
                 gcapp.reset();
                 gcapp.showImage();
+                break;
+            case 'h':
+                gcapp.HCResult();
                 break;
             case 'n':
                 int iterCount = gcapp.getIterCount();
