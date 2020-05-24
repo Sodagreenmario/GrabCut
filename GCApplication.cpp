@@ -352,8 +352,11 @@ void GCApplication::SmoothSaliency(Mat &colorNum1i, Mat &sal1f, float delta, con
 
 void GCApplication::HCResult(){
     Mat sal, img3f;
+    clock_t start_time = clock();
     image->convertTo(img3f, CV_32FC3, 1.0 / 255);
     sal = GetHC(img3f);
+    clock_t end_time = clock();
+    printf("HC execute time: %.2fs", (end_time - start_time) * 1.0 / CLOCKS_PER_SEC);
     imshow( *winName, sal );
 }
 

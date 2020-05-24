@@ -63,7 +63,7 @@ static double calcBeta( const Mat& img )
         beta = 0;
     else
         beta = 1.f / (2 * beta/(4*img.cols*img.rows - 3*img.cols - 3*img.rows + 2) );
-    printf("\n    beta : %f", beta);
+    printf("\n    beta : %.2f", beta);
     return beta;
 }
 
@@ -81,7 +81,7 @@ static double calcBeta( const Mat& img )
       cv::InputOutputArray _mask : The segmentation result.
 
  */
-static void calcNWeights( const Mat& img, Mat& leftW, Mat& upleftW, Mat& upW, Mat& uprightW, double beta, double gamma )
+static double calcNWeights( const Mat& img, Mat& leftW, Mat& upleftW, Mat& upW, Mat& uprightW, double beta, double gamma )
 {
 
     const double gammaDivSqrt2 = gamma / std::sqrt(2.0f);
@@ -127,7 +127,8 @@ static void calcNWeights( const Mat& img, Mat& leftW, Mat& upleftW, Mat& upW, Ma
             total_nweights += leftW.at<double>(y,x) + upleftW.at<double>(y, x) + upW.at<double>(y,x) + uprightW.at<double>(y,x);
         }
     }
-    printf("\n    V : %f", total_nweights);
+    printf("\n    V : %.2f", total_nweights);
+    return total_nweights;
 }
 
 /*
@@ -290,7 +291,7 @@ static void learnGMMs( const Mat& img, const Mat& mask, const Mat& compIdxs, GMM
 /*
   Construct GCGraph
 */
-static void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM, const GMM& fgdGMM, double lambda,
+static double constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM, const GMM& fgdGMM, double lambda,
                               const Mat& leftW, const Mat& upleftW, const Mat& upW, const Mat& uprightW,
                               AdaptedGrpah& graph )
 {
@@ -298,6 +299,7 @@ static void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM
             edgeCount = 2*(4*img.cols*img.rows - 3*(img.cols + img.rows) + 2);
     graph = AdaptedGrpah(vtxCount, edgeCount);
     Point p;
+    double backgroud_tweights = 0.0, foreground_tweights = 0.0;
     for( p.y = 0; p.y < img.rows; p.y++ )
     {
         for( p.x = 0; p.x < img.cols; p.x++)
@@ -322,6 +324,10 @@ static void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM
                 fromSource = lambda;
                 toSink = 0;
             }
+
+            backgroud_tweights += fromSource;
+            foreground_tweights += toSink;
+
             graph.addTermWeights( vtxIdx, fromSource, toSink );
             // set n-weights
             if( p.x>0 )
@@ -346,6 +352,10 @@ static void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM
             }
         }
     }
+    printf("\n    U : %.2f\n", backgroud_tweights + foreground_tweights);
+    printf("      - U_background : %.2f\n", backgroud_tweights);
+    printf("      - U_foreground : %.2f", foreground_tweights);
+    return backgroud_tweights + foreground_tweights;
 }
 
 /*
@@ -438,15 +448,16 @@ void GrabCut( InputArray _img, InputOutputArray _mask, Rect rect,
     const double beta = calcBeta( img );
     Mat leftW, upleftW, upW, uprightW;
     // 4.1.2 Calculate the non-terminal weights.
-    calcNWeights( img, leftW, upleftW, upW, uprightW, beta, gamma );
+    double V = calcNWeights( img, leftW, upleftW, upW, uprightW, beta, gamma );
     for( int i = 0; i < iterCount; i++ )
     {
         AdaptedGrpah graph;
         assignGMMsComponents( img, mask, bgdGMM, fgdGMM, compIdxs );
         if( mode != GC_EVAL_FREEZE_MODEL )
             learnGMMs( img, mask, compIdxs, bgdGMM, fgdGMM );
-        constructGCGraph(img, mask, bgdGMM, fgdGMM, lambda, leftW, upleftW, upW, uprightW, graph );
+        double U = constructGCGraph(img, mask, bgdGMM, fgdGMM, lambda, leftW, upleftW, upW, uprightW, graph );
         int changed = estimateSegmentation( graph, mask );
-        cout << "\n    changed pixels: " << changed << endl;
+        printf("\n    E : %.2f", V + U);
+        printf("\n    changed pixels: %d\n", changed);
     }
 }
